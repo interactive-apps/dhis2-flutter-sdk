@@ -2,7 +2,7 @@ final Map<Object, dynamic> sampleEventUpload = {
   "events": [
     {
       "event": "Tr95hr7sher",
-      "programStage": "A03MvHHogjR",
+      "programStage": "A03MvHH7gjR",
       "trackedEntityInstance": "VYhjy99cyVv",
       "orgUnit": "DiszpKrYNg8",
       "eventDate": "2022-12-29T00:00:00.000",
@@ -17,12 +17,11 @@ final Map<Object, dynamic> sampleEventUpload = {
         {"dataElement": "wQLfBvPrXqq", "value": "NVP only"},
         {"dataElement": "a3kGcGDCuk6", "value": "2"},
         {"dataElement": "UXz7xuGCEhU", "value": "3228"}
-      ],
-      "program": "IpHINAT79UW"
+      ]
     },
     {
       "event": "NUE7a9V9dxi",
-      "programStage": "A03MvHHogjR",
+      "programStage": "A03MvHH7gjR",
       "trackedEntityInstance": "cAQnNOXeh8s",
       "orgUnit": "DiszpKrYNg8",
       "eventDate": "2021-11-15T00:00:00.000",
@@ -36,8 +35,7 @@ final Map<Object, dynamic> sampleEventUpload = {
         {"dataElement": "wQLfBvPrXqq", "value": "NVP only"},
         {"dataElement": "a3kGcGDCuk6", "value": "1"},
         {"dataElement": "UXz7xuGCEhU", "value": "3190"}
-      ],
-      "program": "IpHINAT79UW"
+      ]
     }
   ]
 };

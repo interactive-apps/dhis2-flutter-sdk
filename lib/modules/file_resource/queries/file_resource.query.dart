@@ -115,10 +115,10 @@ class FileResourceQuery extends BaseQuery<FileResource> {
         fileResource.resourceId = resourceId;
         fileResource.storageStatus =
             importSummary['response']?['fileResource']?['storageStatus'];
-        fileResource.lastSyncDate =
-            DateTime.now().toIso8601String().split('.')[0];
+        fileResource.lastSyncDate = DateTime.now().toIso8601String();
         fileResource.lastSyncSummary = importSummary.toString();
-        queue.add(() => FileResourceQuery().setData(fileResource).save());
+        queue.add(() =>
+            FileResourceQuery(database: database).setData(fileResource).save());
 
         if (resourceId != null) {
           switch (fileResource.elementType) {
@@ -164,7 +164,7 @@ class FileResourceQuery extends BaseQuery<FileResource> {
       await formValueUpdateQueue.onComplete;
     }
 
-    return await FileResourceQuery()
+    return await FileResourceQuery(database: database)
         .byIds(fileResources
             .map((fileResource) => fileResource.id as String)
             .toList())
@@ -176,7 +176,7 @@ class FileResourceQuery extends BaseQuery<FileResource> {
       required String trackedEntityInstance,
       required String resourceId}) async {
     TrackedEntityAttributeValue? trackedEntityAttributeValue =
-        await TrackedEntityAttributeValueQuery()
+        await TrackedEntityAttributeValueQuery(database: database)
             .where(attribute: 'attribute', value: attribute)
             .where(
                 attribute: 'trackedEntityInstance',
@@ -190,13 +190,13 @@ class FileResourceQuery extends BaseQuery<FileResource> {
           trackedEntityInstance: trackedEntityInstance,
           value: resourceId);
 
-      return await TrackedEntityAttributeValueQuery()
+      return await TrackedEntityAttributeValueQuery(database: database)
           .setData(newTrackedEntityAttributeValue)
           .save();
     }
 
     trackedEntityAttributeValue.value = resourceId;
-    return await TrackedEntityAttributeValueQuery()
+    return await TrackedEntityAttributeValueQuery(database: database)
         .setData(trackedEntityAttributeValue)
         .save();
   }
@@ -205,10 +205,11 @@ class FileResourceQuery extends BaseQuery<FileResource> {
       {required String dataElement,
       required String event,
       required String resourceId}) async {
-    EventDataValue? eventDataValue = await EventDataValueQuery()
-        .where(attribute: 'dataElement', value: dataElement)
-        .where(attribute: 'event', value: event)
-        .getOne();
+    EventDataValue? eventDataValue =
+        await EventDataValueQuery(database: database)
+            .where(attribute: 'dataElement', value: dataElement)
+            .where(attribute: 'event', value: event)
+            .getOne();
 
     if (eventDataValue == null) {
       final newEventDataValue = EventDataValue(
@@ -217,10 +218,14 @@ class FileResourceQuery extends BaseQuery<FileResource> {
           event: event,
           dirty: true);
 
-      return await EventDataValueQuery().setData(newEventDataValue).save();
+      return await EventDataValueQuery(database: database)
+          .setData(newEventDataValue)
+          .save();
     }
 
     eventDataValue.value = resourceId;
-    return await EventDataValueQuery().setData(eventDataValue).save();
+    return await EventDataValueQuery(database: database)
+        .setData(eventDataValue)
+        .save();
   }
 }

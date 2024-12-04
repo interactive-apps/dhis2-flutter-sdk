@@ -19,6 +19,12 @@ class ProgramRuleVariable extends IdentifiableEntity {
   String? dataElement;
 
   @Column(nullable: true)
+  String? option;
+
+  @Column(nullable: true)
+  String? section;
+
+  @Column(nullable: true)
   String? trackedEntityAttribute;
 
   ProgramRuleVariable(
@@ -30,6 +36,8 @@ class ProgramRuleVariable extends IdentifiableEntity {
       this.useCodeForOptionSet,
       this.dataElement,
       this.trackedEntityAttribute,
+      this.option,
+      this.section,
       required bool dirty})
       : super(id: id, name: name, displayName: displayName, dirty: dirty);
 
@@ -51,6 +59,16 @@ class ProgramRuleVariable extends IdentifiableEntity {
                 : json['trackedEntityAttribute']['id']
             : null,
         program: json['program'],
+        option: json['option'] != null
+            ? json['option'] is String
+                ? json['option']
+                : json['option']['id']
+            : null,
+        section: json['section'] != null
+            ? json['section'] is String
+                ? json['section']
+                : json['section']['id']
+            : null,
         dirty: json['dirty']);
   }
 
@@ -63,6 +81,8 @@ class ProgramRuleVariable extends IdentifiableEntity {
     data['trackedEntityAttribute'] = this.trackedEntityAttribute;
     data['programRuleVariableSourceType'] = this.programRuleVariableSourceType;
     data['program'] = this.program;
+    data['option'] = this.option;
+    data['section'] = this.section;
     data['dirty'] = this.dirty;
     return data;
   }

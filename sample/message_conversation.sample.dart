@@ -11,6 +11,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "Amgjt9xG88l",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -44,6 +45,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "AzSd49KJ0ub",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -77,6 +79,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "B1J4VIexpNX",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -110,6 +113,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Didier Konan mentioned you in DHIS 2",
+      "subject": "Didier Konan mentioned you in DHIS 2",
       "id": "BDY2VjtQNWx",
       "messageType": "SYSTEM",
       "displayName": "Didier Konan mentioned you in DHIS 2",
@@ -143,6 +147,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "C208BSaIKsG",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -176,6 +181,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "CrT5nj1U2du",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -209,6 +215,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Possible Malaria outbreak detected",
+      "subject": "Possible Malaria outbreak detected",
       "id": "DlntzibVVqW",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Possible Malaria outbreak detected",
@@ -242,6 +249,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "DtImWYMXc0X",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -275,6 +283,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "DuheDdBdcUk",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -308,6 +317,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "ErK8U0day1v",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -341,6 +351,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "FGjUbfYhi7z",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -374,6 +385,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "G8zlj0Q7p69",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -407,6 +419,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Scheduler startup",
       "id": "GJeQgdBPgXT",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -440,6 +453,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": true,
       "name": "Can I use my mobile phone to enter data?",
+      "subject": "Can I use my mobile phone to enter data?",
       "id": "Gc03smoTm6q",
       "messageType": "PRIVATE",
       "displayName": "Can I use my mobile phone to enter data?",
@@ -486,6 +500,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": true,
       "name": "Analytics table process failed",
+      "subject": "Can I use my mobile phone to enter data?",
       "id": "Gq7CIKRlpQ3",
       "messageType": "TICKET",
       "displayName": "Analytics table process failed",
@@ -519,6 +534,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "H1Go56oHgLq",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -552,6 +568,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "H70fOD9YcPt",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -585,6 +602,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Possible Malaria outbreak detected",
+      "subject": "Possible Malaria outbreak detected",
       "id": "HLMciuQxzDA",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Possible Malaria outbreak detected",
@@ -618,6 +636,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "IrBgxoO08AH",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -651,6 +670,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "J3gGoKk3Cuu",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -684,6 +704,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "JQsKMpQbUXn",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -717,6 +738,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Tom Wakiki mentioned you in DHIS 2",
+      "subject": "Tom Wakiki mentioned you in DHIS 2",
       "id": "JSfNkjXvPwY",
       "messageType": "SYSTEM",
       "displayName": "Tom Wakiki mentioned you in DHIS 2",
@@ -750,6 +772,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": true,
       "name": "Data approved",
+      "subject": "Data approved",
       "id": "K1jUMuUrQAq",
       "messageType": "PRIVATE",
       "displayName": "Data approved",
@@ -781,6 +804,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "KFC86vw841L",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -814,6 +838,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": true,
       "name": "DHIS version 2.12 is released",
+      "subject": "DHIS version 2.12 is released",
       "id": "KO5qk1wj7vj",
       "messageType": "PRIVATE",
       "displayName": "DHIS version 2.12 is released",
@@ -860,6 +885,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "DHIS version 2.12 is released",
       "id": "KS6rHkawynj",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -893,6 +919,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "KpgOsLftWhU",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -926,6 +953,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Possible Malaria outbreak detected",
+      "subject": "Possible Malaria outbreak detected",
       "id": "L4KuixuKBQb",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Possible Malaria outbreak detected",
@@ -959,6 +987,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "LA74U67Ougq",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -992,6 +1021,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "M13rTxSDH9f",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -1025,6 +1055,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'Dataset notification'",
+      "subject": "Job failed: 'Dataset notification'",
       "id": "M6hxJfODVew",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'Dataset notification'",
@@ -1058,6 +1089,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "MvSWLv0GAva",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1091,6 +1123,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "NiHWtaa3nKf",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1124,6 +1157,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Possible Malaria outbreak detected",
+      "subject": "Possible Malaria outbreak detected",
       "id": "NkBizHHr4ef",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Possible Malaria outbreak detected",
@@ -1157,6 +1191,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "OLm7Mq9Xpkj",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -1190,6 +1225,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "PmGe2D6aLIh",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1223,6 +1259,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "QPxBDop7mDd",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -1256,6 +1293,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": true,
       "name": "DHIS 2 version 2.10 released",
+      "subject": "DHIS 2 version 2.10 released",
       "id": "QYsJDe0Xi9l",
       "messageType": "PRIVATE",
       "displayName": "DHIS 2 version 2.10 released",
@@ -1290,6 +1328,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "QfXrFt88OVC",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -1323,6 +1362,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "QryuEqExWPO",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1356,6 +1396,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "R28YmfTRf6t",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -1389,6 +1430,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Validation violations as of 2017-05-29T16:48:45",
+      "subject": "Validation violations as of 2017-05-29T16:48:45",
       "id": "R7qfkBaBRgF",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Validation violations as of 2017-05-29T16:48:45",
@@ -1422,6 +1464,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "RRfySvynrfb",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1455,6 +1498,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Validation violations as of 2017-05-29T16:44:46",
+      "subject": "Validation violations as of 2017-05-29T16:44:46",
       "id": "S3P3phajbo3",
       "messageType": "VALIDATION_RESULT",
       "displayName": "Validation violations as of 2017-05-29T16:44:46",
@@ -1488,6 +1532,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "SVmNhFrp1Rn",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -1521,6 +1566,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "SiUcLeChUKN",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -1554,6 +1600,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job 'inMemoryAnalyticsJob' failed",
+      "subject": "Job 'inMemoryAnalyticsJob' failed",
       "id": "TSrTeGIdC4l",
       "messageType": "SYSTEM",
       "displayName": "Job 'inMemoryAnalyticsJob' failed",
@@ -1587,6 +1634,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Scheduler startup",
+      "subject": "Scheduler startup",
       "id": "TsAMlNs5Mco",
       "messageType": "SYSTEM",
       "displayName": "Scheduler startup",
@@ -1620,6 +1668,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Job failed: 'inMemoryAnalyticsJob'",
+      "subject": "Job failed: 'inMemoryAnalyticsJob'",
       "id": "Uw5ji9kAahO",
       "messageType": "SYSTEM",
       "displayName": "Job failed: 'inMemoryAnalyticsJob'",
@@ -1653,6 +1702,7 @@ final Map<String, dynamic> sampleMessageConversations = {
     {
       "read": false,
       "name": "Analytics table process failed",
+      "subject": "Analytics table process failed",
       "id": "UzbRcVP4DhE",
       "messageType": "SYSTEM",
       "displayName": "Analytics table process failed",
@@ -1683,5 +1733,52 @@ final Map<String, dynamic> sampleMessageConversations = {
         }
       ]
     }
+  ]
+};
+
+final Map<String, dynamic> sampleFilteredMessageConversations = {
+  "pager": {
+    "page": 1,
+    "pageCount": 3,
+    "total": 129,
+    "pageSize": 50,
+    "nextPage":
+        "https://play.dhis2.org/2.35.11/api/messageConversations.json?page=2&fields=*%2Cmessages%5B*%5D"
+  },
+  "messageConversations": [
+    {
+      "read": false,
+      "name": "Scheduler startup",
+      "subject": "Scheduler startup",
+      "id": "u9gjt9pG88l",
+      "messageType": "SYSTEM",
+      "displayName": "Scheduler startup",
+      "status": "NONE",
+      "userMessages": [
+        {
+          "followUp": false,
+          "read": false,
+          "key": "31e9aaa6-0221-41e7-a56e-d85d61c3af3e",
+          "user": {
+            "displayName": "Tom Wakiki",
+            "id": "GOLswS44mh8",
+            "username": "system"
+          }
+        }
+      ],
+      "messages": [
+        {
+          "lastUpdated": "2021-01-04T09:39:29.988",
+          "created": "2021-01-04T09:39:29.988",
+          "name":
+              "Scheduler startup\n\nSystem title: DHIS 2 Demo - Sierra Leone\nBase URL: https://test.databases.dhis2.org/2.35.1\nTime: 2021-01-04T09:39:29.951Z\nMessage: Scheduler started with one or more unexecuted jobs:\n\nJob [Js3vHn2AVuG, Validation result notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 07:00:00.0\n\nJob [sHMedQF7VYa, Credentials expiry alert] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [YvAwAmrqAtN, Dataset notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [BFa3jDsbtdO, Data statistics] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [pd6O228pqr0, File resource clean up] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [uwWCT2BMmlq, Remove expired reserved values] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-01 16:00:00.0\n\n\nCause: ",
+          "id": "qLOpOzBGz8s",
+          "displayName":
+              "Scheduler startup\n\nSystem title: DHIS 2 Demo - Sierra Leone\nBase URL: https://test.databases.dhis2.org/2.35.1\nTime: 2021-01-04T09:39:29.951Z\nMessage: Scheduler started with one or more unexecuted jobs:\n\nJob [Js3vHn2AVuG, Validation result notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 07:00:00.0\n\nJob [sHMedQF7VYa, Credentials expiry alert] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [YvAwAmrqAtN, Dataset notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [BFa3jDsbtdO, Data statistics] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [pd6O228pqr0, File resource clean up] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [uwWCT2BMmlq, Remove expired reserved values] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-01 16:00:00.0\n\n\nCause: ",
+          "text":
+              "Scheduler startup\n\nSystem title: DHIS 2 Demo - Sierra Leone\nBase URL: https://test.databases.dhis2.org/2.35.1\nTime: 2021-01-04T09:39:29.951Z\nMessage: Scheduler started with one or more unexecuted jobs:\n\nJob [Js3vHn2AVuG, Validation result notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 07:00:00.0\n\nJob [sHMedQF7VYa, Credentials expiry alert] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [YvAwAmrqAtN, Dataset notification] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [BFa3jDsbtdO, Data statistics] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [pd6O228pqr0, File resource clean up] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-02 02:00:00.0\n\nJob [uwWCT2BMmlq, Remove expired reserved values] has status failed or was scheduled in server downtime. Actual execution time was supposed to be: 2020-10-01 16:00:00.0\n\n\nCause: "
+        }
+      ]
+    },
   ]
 };

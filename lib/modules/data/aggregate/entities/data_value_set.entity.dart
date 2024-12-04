@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:d2_touch/core/annotations/index.dart';
 import 'package:d2_touch/modules/data/aggregate/entities/data_value.entity.dart';
+import 'package:d2_touch/modules/data/aggregate/models/data_value_set_import_summary.dart';
 import 'package:d2_touch/shared/entities/identifiable.entity.dart';
 import 'package:d2_touch/shared/utilities/object.util.dart';
 
@@ -23,8 +24,8 @@ class DataValueSet extends IdentifiableEntity {
   @Column(nullable: true)
   bool? syncFailed;
 
-  @Column(nullable: true)
-  String? lastSyncSummary;
+  @Column(nullable: true, type: ColumnType.TEXT)
+  DataValueSetImportSummary? lastSyncSummary;
 
   @Column(nullable: true)
   String? lastSyncDate;
@@ -67,8 +68,8 @@ class DataValueSet extends IdentifiableEntity {
     final id =
         json['id'] ?? '${json['dataSet']}_${json['orgUnit']}_${json['period']}';
 
-    const JsonEncoder encoder = JsonEncoder();
-    final dynamic lastSyncSummary = encoder.convert(json['lastSyncSummary']);
+    final DataValueSetImportSummary? lastSyncSummary =
+        DataValueSet.getDataValueSetImportSummary(json['lastSyncSummary']);
 
     final dataValues = json['dataValues'];
 
@@ -104,7 +105,10 @@ class DataValueSet extends IdentifiableEntity {
     data['dirty'] = this.dirty;
     data['synced'] = this.synced;
     data['syncFailed'] = this.syncFailed;
-    data['lastSyncSummary'] = this.lastSyncSummary;
+    data['lastSyncSummary'] = this.lastSyncSummary != null
+        ? jsonEncode(
+            (this.lastSyncSummary as DataValueSetImportSummary).responseSummary)
+        : null;
     data['lastSyncDate'] = this.lastSyncDate;
     data['period'] = this.period;
     data['orgUnit'] = this.orgUnit;
@@ -112,6 +116,21 @@ class DataValueSet extends IdentifiableEntity {
     data['dataValues'] = this.dataValues;
 
     return data;
+  }
+
+  static DataValueSetImportSummary? getDataValueSetImportSummary(
+      String? lastSyncSummary) {
+    if (lastSyncSummary == null) {
+      return null;
+    }
+
+    DataValueSetImportSummary? importSummary = null;
+    try {
+      importSummary =
+          DataValueSetImportSummary.fromJson(jsonDecode(lastSyncSummary));
+    } catch (e) {}
+
+    return importSummary;
   }
 
   static toUpload(DataValueSet dataValueSet) {

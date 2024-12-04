@@ -74,7 +74,8 @@ class EventDataValue extends IdentifiableEntity {
   static toUpload(EventDataValue eventDataValue) {
     return {
       "dataElement": eventDataValue.dataElement,
-      "value": eventDataValue.value
+      "value": eventDataValue.value.replaceAll("\"",
+          '') //Replace all helps to sanitize with double quoted strings i.e '"value"' from program rules if any
     };
   }
 }

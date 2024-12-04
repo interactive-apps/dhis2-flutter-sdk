@@ -17,7 +17,17 @@ final Map<String, dynamic> sampleDataElements = {
       "shortName": "Accute Flaccid Paral (Deaths < 5 yrs)",
       "aggregationType": "SUM",
       "displayName": "Accute Flaccid Paralysis (Deaths < 5 yrs)",
-      "valueType": "NUMBER"
+      "valueType": "NUMBER",
+      "translations": [
+        {"property": "NAME", "locale": "en", "value": "First name"},
+        {"property": "DESCRIPTION", "locale": "en", "value": "First name"},
+        {"property": "SHORT_NAME", "locale": "en", "value": "First name"},
+        {"property": "FORM_NAME", "locale": "sw", "value": "Jina la kwanza"},
+        {"property": "SHORT_NAME", "locale": "sw", "value": "Jina la kwanza"},
+        {"property": "FORM_NAME", "locale": "en", "value": "First name"},
+        {"property": "DESCRIPTION", "locale": "sw", "value": "Jina la kwanza"},
+        {"property": "NAME", "locale": "sw", "value": "Jina la kwanza"}
+      ]
     },
     {
       "lastUpdated": "2017-05-19T15:13:52.487",

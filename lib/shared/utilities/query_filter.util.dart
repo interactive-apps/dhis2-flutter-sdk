@@ -84,7 +84,7 @@ class QueryFilter {
           final ilikeFilters = values
               .map((valueItem) => 'filter=${filter.attribute}:like:$valueItem')
               .toList();
-          return ilikeFilters.join('&') + '&rootJunction=OR';
+          return ilikeFilters.join('&');
 
         case QueryCondition.Ilike:
           final List<String> values =
@@ -92,7 +92,7 @@ class QueryFilter {
           final ilikeFilters = values
               .map((valueItem) => 'filter=${filter.attribute}:ilike:$valueItem')
               .toList();
-          return ilikeFilters.join('&') + '&rootJunction=OR';
+          return ilikeFilters.join('&');
 
         case QueryCondition.LessThan:
           return 'filter=${filter.attribute}:lt:${filter.value}';

@@ -10,7 +10,8 @@ class ProgramRuleQuery extends BaseQuery<ProgramRule> {
   ProgramRuleQuery({Database? database}) : super(database: database);
 
   ProgramRuleQuery withActions() {
-    final programRuleAction = Repository<ProgramRuleAction>();
+    final programRuleAction =
+        Repository<ProgramRuleAction>(database: database as Database);
     final Column? relationColumn = programRuleAction.columns.firstWhere(
         (column) =>
             column.relation?.referencedEntity?.tableName == this.tableName);

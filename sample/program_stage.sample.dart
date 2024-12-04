@@ -2,7 +2,7 @@ final Map<String, dynamic> sampleProgramStages = {
   "programStages": [
     {
       "lastUpdated": "2021-09-16T09:49:07.706",
-      "id": "A03MvHHogjR",
+      "id": "A03MvHH7gjR",
       "created": "2013-03-04T11:41:07.541",
       "name": "Birth",
       "program": {"id": "IpHINAT79UW"},
@@ -348,7 +348,7 @@ final Map<String, dynamic> sampleProgramStages = {
     },
     {
       "lastUpdated": "2021-09-16T09:49:07.717",
-      "id": "ZzYYXq4fJie",
+      "id": "Z0YYXq4fJie",
       "created": "2013-03-04T11:41:07.541",
       "name": "Baby Postnatal",
       "preGenerateUID": false,

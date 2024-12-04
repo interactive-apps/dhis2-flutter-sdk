@@ -11,6 +11,9 @@ class MessageConversation extends IdentifiableEntity {
   String status;
 
   @Column(type: ColumnType.TEXT)
+  String subject;
+
+  @Column(type: ColumnType.TEXT)
   String messageType;
 
   @Column(type: ColumnType.TEXT, nullable: true)
@@ -27,6 +30,7 @@ class MessageConversation extends IdentifiableEntity {
       String? created,
       String? lastUpdated,
       required String name,
+      required this.subject,
       required this.status,
       required this.messageType,
       required this.read,
@@ -46,6 +50,7 @@ class MessageConversation extends IdentifiableEntity {
     return MessageConversation(
         id: json['id'],
         name: json['name'],
+        subject: json['subject'],
         created: json['created'],
         displayName: json['displayName'],
         lastUpdated: json['lastUpdated'],
@@ -69,6 +74,7 @@ class MessageConversation extends IdentifiableEntity {
     data['id'] = this.id;
     data['created'] = this.created;
     data['name'] = this.name;
+    data['subject'] = this.subject;
     data['displayName'] = this.displayName;
     data['status'] = this.status;
     data['messageType'] = this.messageType;

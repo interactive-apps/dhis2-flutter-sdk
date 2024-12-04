@@ -11,7 +11,8 @@ class ProgramStageSectionQuery extends BaseQuery<ProgramStageSection> {
 
   ProgramStageSectionQuery withDataElements() {
     final programStageSectionDataElement =
-        Repository<ProgramStageSectionDataElement>();
+        Repository<ProgramStageSectionDataElement>(
+            database: database as Database);
     final Column? relationColumn = programStageSectionDataElement.columns
         .firstWhere((column) =>
             column.relation?.referencedEntity?.tableName == this.tableName);

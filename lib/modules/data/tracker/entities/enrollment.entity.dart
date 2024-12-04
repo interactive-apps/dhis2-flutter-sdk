@@ -108,7 +108,7 @@ class Enrollment extends IdentifiableEntity {
         trackedEntityType: json['trackedEntityType'],
         orgUnit: json['orgUnit'],
         program: json['program'],
-        status: json['status'],
+        status: json['status'] ?? 'ACTIVE',
         synced: json['synced'],
         syncFailed: json['syncFailed'],
         lastSyncSummary: lastSyncSummary,
@@ -160,6 +160,7 @@ class Enrollment extends IdentifiableEntity {
         (events ?? []).where((event) => event.enrollment == enrollment.id);
     return {
       "enrollment": enrollment.enrollment,
+      "status": enrollment.status ?? 'ACTIVE',
       "trackedEntityInstance": enrollment.trackedEntityInstance,
       "geometry":
           enrollment.geometry != null ? enrollment.geometry?.toJson() : null,

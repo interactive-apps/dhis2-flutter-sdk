@@ -51,17 +51,15 @@ class DataValue extends IdentifiableEntity {
             created: created,
             lastUpdated: lastUpdated,
             dirty: dirty) {
-    this.id = this.id ??
+    this.id =
         '${this.dataElement}_${this.categoryOptionCombo}_${this.dataValueSet}';
     this.name = this.name ?? this.id;
   }
 
   factory DataValue.fromJson(Map<String, dynamic> json) {
-    final id = json['id'] ??
-        '${json['dataElement']}_${json['categoryOptionCombo']}_${json['dataValueSet']}';
     return DataValue(
-        id: id,
-        name: json['name'] ?? id,
+        id: json['id'],
+        name: json['name'],
         created: json['created'],
         lastUpdated: json['lastUpdated'],
         dirty: json['dirty'],

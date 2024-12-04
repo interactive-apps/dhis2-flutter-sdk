@@ -24,8 +24,9 @@ class FileResource extends IdentifiableEntity {
   @Column(nullable: true)
   String? contentLength;
 
-  @Column()
-  String storageStatus;
+  @Column(nullable: true)
+  String? storageStatus;
+
   @Column()
   String localFilePath;
 

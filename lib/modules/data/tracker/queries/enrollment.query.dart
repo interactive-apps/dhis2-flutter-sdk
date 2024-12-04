@@ -20,12 +20,12 @@ class EnrollmentQuery extends BaseQuery<Enrollment> {
         .where(attribute: 'dirty', value: true)
         .get();
 
-    final List<String> enrollmentIds = enrollments
-        .map((trackedEntityInstance) => trackedEntityInstance.id as String)
-        .toList();
+    final List<String> enrollmentIds =
+        enrollments.map((enrollment) => enrollment.id as String).toList();
 
-    final List<Event> events = await EventQuery()
-        .whereIn(attribute: 'enrollment', values: enrollmentIds, merge: false);
+    final List<Event> events = await EventQuery(database: database)
+        .whereIn(attribute: 'enrollment', values: enrollmentIds, merge: false)
+        .get();
 
     final enrollmentUploadPayload = enrollments.map((enrollment) {
       return Enrollment.toUpload(enrollment, events);
@@ -35,9 +35,42 @@ class EnrollmentQuery extends BaseQuery<Enrollment> {
         {'enrollments': enrollmentUploadPayload},
         database: this.database, dioTestClient: dioTestClient);
 
-    final List<dynamic> importSummaries =
-        (response.body?['response']?['importSummaries'] ?? []).toList();
-
+    final List<dynamic> importSummaries = response.body.runtimeType == String
+        ? [
+            {
+              "responseType": "ImportSummary",
+              "status": "ERROR",
+              "reference": "",
+              "enrollments": {
+                "responseType": "ImportSummary",
+                "status": "ERROR",
+                "imported": 0,
+                "updated": 0,
+                "ignored": 1,
+                "deleted": 0,
+                "importSummaries:": [],
+                "total": 0
+              },
+              "importCount": {
+                "imported": 0,
+                "updated": 0,
+                "ignored": 1,
+                "deleted": 0
+              },
+              "total": 0,
+              "importSummaries:": [],
+              "conflicts": [
+                {
+                  "object": "Server.ERROR",
+                  "value": '${response.body.toString()}: ${response.statusCode}'
+                }
+              ]
+            }
+          ]
+        : (response.body != null && response.body?['response'] != null
+                ? response.body?['response']?['importSummaries'] ?? []
+                : [])
+            .toList();
     final queue = Queue(parallel: 50);
     num availableItemCount = 0;
 
@@ -52,11 +85,11 @@ class EnrollmentQuery extends BaseQuery<Enrollment> {
         enrollment.synced = !syncFailed;
         enrollment.dirty = syncFailed;
         enrollment.syncFailed = syncFailed;
-        enrollment.lastSyncDate =
-            DateTime.now().toIso8601String().split('.')[0].split('.')[0];
+        enrollment.lastSyncDate = DateTime.now().toIso8601String();
         enrollment.lastSyncSummary =
             EnrollmentImportSummary.fromJson(importSummary);
-        queue.add(() => EnrollmentQuery().setData(enrollment).save());
+        queue.add(() =>
+            EnrollmentQuery(database: database).setData(enrollment).save());
       }
     });
 
@@ -66,6 +99,6 @@ class EnrollmentQuery extends BaseQuery<Enrollment> {
       await queue.onComplete;
     }
 
-    return await EnrollmentQuery().byIds(enrollmentIds).get();
+    return await EnrollmentQuery(database: database).byIds(enrollmentIds).get();
   }
 }

@@ -15,7 +15,7 @@ class ValidationRuleQuery extends BaseQuery<ValidationRule> {
   Future<List<ValidationRule>?> download(
       Function(RequestProgress, bool) callback,
       {Dio? dioTestClient}) async {
-    List<DataSet> dataSets = await DataSetQuery().get();
+    List<DataSet> dataSets = await DataSetQuery(database: database).get();
 
     final queue = Queue(parallel: 50);
     num availableItemCount = 0;
@@ -72,9 +72,12 @@ class ValidationRuleQuery extends BaseQuery<ValidationRule> {
             percentage: 51),
         false);
 
-    List data = response.body[this.apiResourceName]?.toList();
+    List? data =
+        response.body != null && response.body[this.apiResourceName] != null
+            ? response.body[this.apiResourceName]?.toList()
+            : [];
 
-    this.data = data.map((dataItem) {
+    this.data = (data ?? []).map((dataItem) {
       dataItem['dirty'] = false;
       dataItem['dataSet'] = dataSet.id;
       return ValidationRule.fromJson(dataItem);
@@ -85,7 +88,7 @@ class ValidationRuleQuery extends BaseQuery<ValidationRule> {
         RequestProgress(
             resourceName: this.apiResourceName as String,
             message:
-                '${this.apiResourceName?.toLowerCase()} for ${dataSet.name} successifully saved into the database',
+                '${this.apiResourceName?.toLowerCase()} for ${dataSet.name} successfully saved into the database',
             status: '',
             percentage: 100),
         true);

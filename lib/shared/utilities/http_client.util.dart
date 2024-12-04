@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:d2_touch/modules/auth/user/entities/user.entity.dart';
-import 'package:d2_touch/modules/auth/user/queries/user.query.dart';
+import 'package:d2_touch/modules/auth/entities/user.entity.dart';
+import 'package:d2_touch/modules/auth/queries/user.query.dart';
 import 'package:d2_touch/shared/utilities/http-details.util.dart';
 import 'package:dio/dio.dart';
 import 'package:sqflite/sqflite.dart';
@@ -50,8 +50,8 @@ class HttpClient {
 
     final dioClient = dioTestClient ??
         Dio(BaseOptions(
-            connectTimeout: 100000,
-            receiveTimeout: 100000,
+            connectTimeout: Duration(milliseconds: 100000),
+            receiveTimeout: Duration(milliseconds: 100000),
             headers: {
               HttpHeaders.authorizationHeader:
                   '${httpDetails.authTokenType} ${httpDetails.authToken}',
@@ -64,7 +64,7 @@ class HttpClient {
 
       return HttpResponse(
           statusCode: response.statusCode ?? 500, body: response.data);
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       if (error.response != null) {
         return HttpResponse(
             statusCode: error.response?.statusCode ?? 500,
@@ -91,8 +91,8 @@ class HttpClient {
 
     final dioClient = dioTestClient ??
         Dio(BaseOptions(
-            connectTimeout: 100000,
-            receiveTimeout: 100000,
+            connectTimeout: Duration(milliseconds: 100000),
+            receiveTimeout: Duration(milliseconds: 100000),
             headers: {
               HttpHeaders.authorizationHeader:
                   '${httpDetails.authTokenType} ${httpDetails.authToken}',
@@ -107,7 +107,7 @@ class HttpClient {
 
       return HttpResponse(
           statusCode: response.statusCode ?? 500, body: response.data);
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       if (error.response != null) {
         return HttpResponse(
             statusCode: error.response?.statusCode ?? 500,
@@ -134,8 +134,8 @@ class HttpClient {
 
     final dioClient = dioTestClient ??
         Dio(BaseOptions(
-            connectTimeout: 100000,
-            receiveTimeout: 100000,
+            connectTimeout: Duration(milliseconds: 100000),
+            receiveTimeout: Duration(milliseconds: 100000),
             headers: {
               HttpHeaders.authorizationHeader:
                   '${httpDetails.authTokenType} ${httpDetails.authToken}',
@@ -144,10 +144,9 @@ class HttpClient {
     try {
       final Response<dynamic> response =
           await dioClient.get('${httpDetails.baseUrl}/api/$resourceUrl');
-
       return HttpResponse(
           statusCode: response.statusCode ?? 500, body: response.data);
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       if (error.response != null) {
         dynamic errorBody = error.response?.data;
         if (error.response?.data is String) {
@@ -166,7 +165,7 @@ class HttpClient {
 
         try {
           final xmlToJsonConverter = Xml2Json();
-          xmlToJsonConverter.parse(error.message);
+          xmlToJsonConverter.parse(error.message!);
 
           errorBody = jsonDecode(xmlToJsonConverter.toParker());
         } catch (e) {}
@@ -177,17 +176,44 @@ class HttpClient {
     }
   }
 
-  // static Future<http.Response> delete(String id, String url) async {
-  //   final http.Response response = await http.delete(
-  //     Uri.parse('$url/$id'),
-  //     headers: <String, String>{
-  //       'Content-Type': 'application/json; charset=UTF-8',
-  //       'Authorization': 'Basic'
-  //     },
-  //   );
+  static Future<HttpResponse> delete(String? id, String? resourceUrl,
+      {String? baseUrl,
+      String? username,
+      String? password,
+      Database? database,
+      Dio? dioTestClient}) async {
+    try {
+      HttpDetails httpDetails = await HttpDetails(
+              baseUrl: baseUrl,
+              username: username,
+              password: password,
+              database: database)
+          .get();
 
-  //   return response;
-  // }
+      final dioClient = dioTestClient ??
+          Dio(BaseOptions(
+              connectTimeout: Duration(milliseconds: 100000),
+              receiveTimeout: Duration(milliseconds: 100000),
+              headers: {
+                HttpHeaders.authorizationHeader:
+                    '${httpDetails.authTokenType} ${httpDetails.authToken}',
+              }));
+
+      final response = await dioClient.delete(
+          '${httpDetails.baseUrl}/api/${resourceUrl!.split('.').first}/$id');
+
+      return HttpResponse(
+          statusCode: response.statusCode ?? 500, body: response.data);
+    } catch (e) {
+      return HttpResponse(
+        statusCode: 404,
+        body: {
+          "status": "error",
+          "message": e,
+        },
+      );
+    }
+  }
 
   static Future<String> getHttpDetails(
       {String? baseUrl,

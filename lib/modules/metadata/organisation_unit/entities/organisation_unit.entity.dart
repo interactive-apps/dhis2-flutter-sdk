@@ -38,7 +38,8 @@ class OrganisationUnit extends IdentifiableEntity {
       required this.openingDate,
       this.parent,
       this.geometry,
-      required dirty})
+      required dirty,
+      dynamic translations})
       : super(
             id: id,
             name: name,
@@ -47,7 +48,8 @@ class OrganisationUnit extends IdentifiableEntity {
             code: code,
             created: created,
             lastUpdated: lastUpdated,
-            dirty: dirty);
+            dirty: dirty,
+            translations: translations);
 
   factory OrganisationUnit.fromJson(Map<String, dynamic> json) {
     final parent = json['parent'];
@@ -62,8 +64,9 @@ class OrganisationUnit extends IdentifiableEntity {
         displayName: json['displayName'],
         externalAccess: json['externalAccess'],
         openingDate: json['openingDate'],
-        dirty: json['dirty'],
+        dirty: json['dirty'] ?? false,
         geometry: json['geometry']?.toString() ?? null,
+        translations: json['translations'],
         parent: parent != null
             ? parent is String
                 ? parent
@@ -86,6 +89,7 @@ class OrganisationUnit extends IdentifiableEntity {
     data['openingDate'] = this.openingDate;
     data['dirty'] = this.dirty;
     data['geometry'] = this.geometry;
+    data['translations'] = this.translations;
     if (this.parent != null) {
       data['parent'] = this.parent;
     }

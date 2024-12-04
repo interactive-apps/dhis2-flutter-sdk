@@ -10,6 +10,7 @@ class QueryModel {
   List<QueryFilter>? filters;
   dynamic relations;
   List<Column> columns;
+  String? junctionOperator;
 
   QueryModel(
       {required this.resourceName,
@@ -19,5 +20,6 @@ class QueryModel {
       this.fields,
       this.filters,
       this.relations,
+      this.junctionOperator,
       required this.columns});
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:d2_touch/core/annotations/index.dart';
 import 'package:d2_touch/modules/metadata/program/entities/attribute_option.entity.dart';
 import 'package:d2_touch/modules/metadata/program/entities/program.entity.dart';
@@ -25,6 +27,9 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
 
   @Column()
   bool mandatory;
+
+  @Column(nullable: true)
+  bool? displayInList;
 
   @Column(nullable: true)
   String? aggregationType;
@@ -57,6 +62,7 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
       required this.sortOrder,
       required this.valueType,
       required this.mandatory,
+      this.displayInList = false,
       this.formName,
       String? displayName,
       this.renderOptionsAsRadio,
@@ -68,8 +74,16 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
       this.optionSetValueCount,
       this.optionSetName,
       this.options,
-      required bool dirty})
-      : super(id: id, name: name, displayName: displayName, dirty: dirty);
+      required bool dirty,
+      String? code,
+      List<dynamic>? translations})
+      : super(
+            id: id,
+            name: name,
+            code: code,
+            displayName: displayName,
+            dirty: dirty,
+            translations: translations);
 
   factory ProgramTrackedEntityAttribute.fromJson(
       Map<String, dynamic> jsonData) {
@@ -77,6 +91,10 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
         jsonData['trackedEntityAttribute']?['optionSet']?['options']?.length;
     final attribute =
         jsonData['attribute'] ?? jsonData['trackedEntityAttribute']?['id'];
+
+    final translations = jsonData['trackedEntityAttribute']?['translations'] ??
+        jsonData['translationString'];
+
     return ProgramTrackedEntityAttribute(
         id: jsonData['id'],
         attribute: attribute,
@@ -88,10 +106,12 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
             jsonData['formName'],
         program: jsonData['program'],
         valueType: jsonData['valueType'],
+        displayInList: jsonData["displayInList"] ?? null,
         sortOrder: jsonData['sortOrder'],
         mandatory: jsonData['mandatory'],
         aggregationType: jsonData['aggregationType'] ??
             jsonData['trackedEntityAttribute']?['aggregationType'],
+        code: jsonData['trackedEntityAttribute']?['code'] ?? jsonData['code'],
         generated: jsonData['generated'] ??
             jsonData['trackedEntityAttribute']?['generated'],
         isUnique: jsonData['isUnique'] ??
@@ -112,7 +132,8 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
                   'dirty': false
                 }))
             .toList(),
-        dirty: jsonData['dirty']);
+        dirty: jsonData['dirty'] ?? false,
+        translations: translations);
   }
 
   Map<String, dynamic> toJson() {
@@ -123,17 +144,20 @@ class ProgramTrackedEntityAttribute extends IdentifiableEntity {
     data['displayName'] = this.displayName;
     data['formName'] = this.formName;
     data['sortOrder'] = this.sortOrder;
+    data['displayInList'] = this.displayInList;
     data['valueType'] = this.valueType;
     data['attribute'] = this.attribute;
     data['renderOptionsAsRadio'] = this.renderOptionsAsRadio;
     data['mandatory'] = this.mandatory;
     data['aggregationType'] = this.aggregationType;
     data['generated'] = this.generated;
+    data['code'] = this.code;
     data['isUnique'] = this.isUnique;
     data['optionSetValue'] = this.optionSetValue;
     data['optionSetName'] = this.optionSetName;
     data['options'] = this.options;
     data['optionSetValueCount'] = this.optionSetValueCount;
+    data['translations'] = jsonEncode(this.translations);
     return data;
   }
 }

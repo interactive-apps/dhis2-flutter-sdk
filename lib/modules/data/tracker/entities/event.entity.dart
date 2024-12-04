@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:d2_touch/core/annotations/index.dart';
 import 'package:d2_touch/modules/data/tracker/models/event_import_summary.dart';
+import 'package:d2_touch/modules/metadata/organisation_unit/entities/organisation_unit.entity.dart';
 import 'package:d2_touch/modules/metadata/program/entities/program_stage.entity.dart';
 import 'package:d2_touch/shared/entities/identifiable.entity.dart';
 
-import 'enrollment.entity.dart';
 import 'event_data_value.entity.dart';
 
 @AnnotationReflectable
@@ -13,9 +13,6 @@ import 'event_data_value.entity.dart';
 class Event extends IdentifiableEntity {
   @Column()
   String? event;
-
-  @Column()
-  String orgUnit;
 
   @Column()
   String status;
@@ -59,13 +56,22 @@ class Event extends IdentifiableEntity {
   @Column(nullable: true)
   String? notes;
 
+  /// A value that detects whether the user has marked the entity has saved or not.
+  /// This is useful for when you want to sync specific data to remote server and leave others.
+  @Column()
+  bool? saved;
+
   @Column(nullable: true)
   String? eventType;
 
   @ManyToOne(joinColumnName: 'programStage', table: ProgramStage)
   dynamic programStage;
 
-  @ManyToOne(joinColumnName: 'enrollment', table: Enrollment)
+  @ManyToOne(joinColumnName: 'orgUnit', table: OrganisationUnit)
+  String orgUnit;
+
+  // @ManyToOne(joinColumnName: 'enrollment', table: Enrollment)
+  @Column(nullable: true)
   dynamic enrollment;
 
   @OneToMany(table: EventDataValue)
@@ -93,6 +99,7 @@ class Event extends IdentifiableEntity {
       this.attributeCategoryOptions,
       this.attributeOptionCombo,
       this.notes,
+      this.saved,
       this.eventType,
       required this.programStage,
       this.enrollment,
@@ -105,6 +112,7 @@ class Event extends IdentifiableEntity {
             dirty: dirty) {
     this.event = this.event ?? this.id;
     this.name = this.name ?? this.event;
+    this.saved = this.saved ?? false;
   }
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -121,6 +129,7 @@ class Event extends IdentifiableEntity {
         dueDate: json['dueDate'],
         deleted: json['deleted'],
         synced: json['synced'],
+        saved: json['saved'],
         syncFailed: json['syncFailed'],
         lastSyncSummary: lastSyncSummary,
         lastSyncDate: json['lastSyncDate'],
@@ -132,7 +141,7 @@ class Event extends IdentifiableEntity {
         notes: json['notes'].toString(),
         eventType: json['eventType'],
         programStage: json['programStage'],
-        enrollment: json['enrollment'] ?? '',
+        enrollment: json['enrollment'],
         dataValues: List<dynamic>.from(json['dataValues'] ?? [])
             .map((event) => EventDataValue.fromJson({
                   ...event,
@@ -155,6 +164,7 @@ class Event extends IdentifiableEntity {
     data['dueDate'] = this.dueDate;
     data['deleted'] = this.deleted;
     data['synced'] = this.synced;
+    data['saved'] = this.saved;
     data['syncFailed'] = this.syncFailed;
     data['lastSyncSummary'] = this.lastSyncSummary != null
         ? jsonEncode(
@@ -170,7 +180,7 @@ class Event extends IdentifiableEntity {
     data['notes'] = this.notes;
     data['eventType'] = this.eventType;
     data['programStage'] = this.programStage;
-    data['enrollment'] = this.enrollment ?? '';
+    data['enrollment'] = this.enrollment;
     data['dataValues'] = this.dataValues;
     data['dirty'] = this.dirty;
     return data;
@@ -183,9 +193,11 @@ class Event extends IdentifiableEntity {
       "trackedEntityInstance": event.trackedEntityInstance,
       "orgUnit": event.orgUnit,
       "eventDate": event.eventDate,
+      "occurredAt": event.eventDate,
       "status": event.status,
       "storedBy": event.storedBy,
       "coordinate": event.coordinate,
+      "enrollment": event.enrollment,
       "dataValues": (event.dataValues ?? [])
           .map((event) => EventDataValue.toUpload(event))
           .toList()
@@ -194,7 +206,6 @@ class Event extends IdentifiableEntity {
     if (event.programStage != null &&
         event.programStage.runtimeType != String) {
       eventToUpload['programStage'] = event.programStage['id'];
-      eventToUpload['program'] = event.programStage['program'];
     }
 
     return eventToUpload;

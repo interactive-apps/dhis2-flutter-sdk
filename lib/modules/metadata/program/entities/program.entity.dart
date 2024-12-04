@@ -141,7 +141,7 @@ class Program extends IdentifiableEntity {
         code: json['code'],
         displayName: json['displayName'],
         description: json['description'],
-        dirty: json['dirty'],
+        dirty: json['dirty'] ?? false,
         captureCoordinates: json['captureCoordinates'],
         completeEventsExpiryDays: json['completeEventsExpiryDays'],
         displayFrontPageList: json['displayFrontPageList'],

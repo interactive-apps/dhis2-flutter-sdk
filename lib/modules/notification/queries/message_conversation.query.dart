@@ -10,7 +10,7 @@ class MessageConversationQuery extends BaseQuery<MessageConversation> {
   MessageConversationQuery({Database? database}) : super(database: database);
 
   MessageConversationQuery withMessages() {
-    final message = Repository<Message>();
+    final message = Repository<Message>(database: database as Database);
     final Column? relationColumn = message.columns.firstWhere((column) =>
         column.relation?.referencedEntity?.tableName == this.tableName);
 

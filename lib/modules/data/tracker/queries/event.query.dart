@@ -3,7 +3,7 @@ import 'package:d2_touch/core/utilities/repository.dart';
 import 'package:d2_touch/modules/data/tracker/entities/event.entity.dart';
 import 'package:d2_touch/modules/data/tracker/entities/event_data_value.entity.dart';
 import 'package:d2_touch/modules/data/tracker/models/event_import_summary.dart';
-import 'package:d2_touch/modules/data/tracker/queries/event_data_value.query.dart';
+import 'package:d2_touch/modules/data/tracker/models/response.dart';
 import 'package:d2_touch/modules/metadata/program/entities/program_stage.entity.dart';
 import 'package:d2_touch/modules/metadata/program/queries/program_stage.query.dart';
 import 'package:d2_touch/shared/models/request_progress.model.dart';
@@ -15,15 +15,18 @@ import 'package:reflectable/reflectable.dart';
 import 'package:sqflite/sqflite.dart';
 
 class EventQuery extends BaseQuery<Event> {
+  int? instanceVersion;
   String? orgUnit;
   String? program;
   String? programStage;
   String? enrollment;
 
-  EventQuery({Database? database}) : super(database: database);
+  EventQuery({Database? database, this.instanceVersion})
+      : super(database: database);
 
   EventQuery withDataValues() {
-    final eventDataValue = Repository<EventDataValue>();
+    final eventDataValue =
+        Repository<EventDataValue>(database: database as Database);
 
     final Column? relationColumn = eventDataValue.columns.firstWhere((column) {
       return column.relation?.referencedEntity?.tableName == this.tableName;
@@ -33,7 +36,7 @@ class EventQuery extends BaseQuery<Event> {
       ColumnRelation relation = ColumnRelation(
           referencedColumn: relationColumn.relation?.attributeName,
           attributeName: 'dataValues',
-          primaryKey: this.primaryKey?.name,
+          primaryKey: primaryKey?.name,
           relationType: RelationType.OneToMany,
           referencedEntity: Entity.getEntityDefinition(
               AnnotationReflectable.reflectType(EventDataValue) as ClassMirror),
@@ -41,8 +44,20 @@ class EventQuery extends BaseQuery<Event> {
               AnnotationReflectable.reflectType(EventDataValue) as ClassMirror,
               false));
 
-      this.relations.add(relation);
+      relations.add(relation);
     }
+
+    return this;
+  }
+
+  EventQuery withProgramStage() {
+    final programStage =
+        Repository<ProgramStage>(database: database as Database);
+    final Column relationColumn = repository.columns.firstWhere((column) =>
+        column.relation?.referencedEntity?.tableName ==
+        programStage.entity.tableName);
+
+    relations.add(relationColumn.relation as ColumnRelation);
 
     return this;
   }
@@ -69,6 +84,10 @@ class EventQuery extends BaseQuery<Event> {
 
   @override
   Future<String> dhisUrl() {
+    if ((this.selected).isNotEmpty) {
+      return Future.value(
+          'events.json?fields=${this.selected.join(',')}&orgUnit=${this.orgUnit}&program=${this.program}${this.programStage != null ? '&programStage=${this.programStage}' : ''}&order=eventDate:desc&pageSize=100&page=1');
+    }
     return Future.value(
         'events.json?fields=event,eventDate,dueDate,program,programStage,orgUnit,trackedEntityInstance,enrollment,enrollmentStatus,status,attributeCategoryOptions,lastUpdated,created,followup,deleted,attributeOptionCombo,dataValues[dataElement,value,lastUpdated,created,storedBy,providedElseWhere]&orgUnit=${this.orgUnit}&program=${this.program}${this.programStage != null ? '&programStage=${this.programStage}' : ''}&order=eventDate:desc&pageSize=100&page=1');
   }
@@ -82,7 +101,7 @@ class EventQuery extends BaseQuery<Event> {
         dirty: true,
         synced: false,
         programStage: this.programStage,
-        eventDate: DateTime.now().toIso8601String().split(".")[0]);
+        eventDate: DateTime.now().toIso8601String());
 
     this.data = event;
 
@@ -92,7 +111,7 @@ class EventQuery extends BaseQuery<Event> {
   }
 
   Future<List<Event>?> upload(Function(RequestProgress, bool) callback,
-      {Dio? dioTestClient}) async {
+      {Dio? dioTestClient, String? resource}) async {
     callback(
         RequestProgress(
             resourceName: this.apiResourceName as String,
@@ -104,6 +123,7 @@ class EventQuery extends BaseQuery<Event> {
     List<Event> events = await this
         .where(attribute: 'synced', value: false)
         .where(attribute: 'dirty', value: true)
+        .withDataValues()
         .get();
 
     callback(
@@ -124,35 +144,28 @@ class EventQuery extends BaseQuery<Event> {
             percentage: 51),
         false);
 
-    List<String> eventIds = [];
-    List<String> eventProgramStageIds = [];
-    events.forEach((event) {
-      eventIds.add(event.id as String);
+    List<String> eventIds = events.map((event) => event.id as String).toList();
 
-      eventProgramStageIds.removeWhere((id) => id == event.programStage);
-      eventProgramStageIds.add(event.programStage);
-    });
-
-    List<EventDataValue> eventDataValues = await EventDataValueQuery()
-        .whereIn(attribute: 'event', values: eventIds, merge: false)
-        .get();
-
-    List<ProgramStage> programStages =
-        await ProgramStageQuery().byIds(eventProgramStageIds).get();
-
-    final eventUploadPayload = events.map((event) {
-      event.dataValues = eventDataValues
-          .where((dataValue) => dataValue.event == event.id)
-          .toList();
-      event.programStage = programStages
-          .lastWhere((programStage) => programStage.id == event.programStage)
-          .toJson();
-      return Event.toUpload(event);
-    }).toList();
+    final eventUploadPayload = [];
+    for (Event event in events) {
+      if (event.programStage != null) {
+        ProgramStage programStage = await ProgramStageQuery(database: database)
+            .byId(event.programStage)
+            .getOne();
+        dynamic eventPayload = Event.toUpload(event);
+        eventPayload['program'] = programStage.program;
+        eventUploadPayload.add(eventPayload);
+      } else {
+        dynamic eventPayload = Event.toUpload(event);
+        eventUploadPayload.add(eventPayload);
+      }
+    }
 
     final response = await HttpClient.post(
-        this.apiResourceName as String, {'events': eventUploadPayload},
-        database: this.database, dioTestClient: dioTestClient);
+        resource ?? this.apiResourceName as String,
+        {'events': eventUploadPayload},
+        database: this.database,
+        dioTestClient: dioTestClient);
 
     callback(
         RequestProgress(
@@ -171,45 +184,128 @@ class EventQuery extends BaseQuery<Event> {
             percentage: 76),
         true);
 
-    final List<dynamic> importSummaries =
-        (response.body?['response']?['importSummaries'] ?? []).toList();
+    final List<dynamic> importSummaries = response.body.runtimeType == String
+        ? [
+            {
+              "responseType": "ImportSummary",
+              "status": "ERROR",
+              "reference": "",
+              "enrollments": {
+                "responseType": "ImportSummary",
+                "status": "ERROR",
+                "imported": 0,
+                "updated": 0,
+                "ignored": 1,
+                "deleted": 0,
+                "importSummaries:": [],
+                "total": 0
+              },
+              "importCount": {
+                "imported": 0,
+                "updated": 0,
+                "ignored": 1,
+                "deleted": 0
+              },
+              "total": 0,
+              "importSummaries:": [],
+              "conflicts": [
+                {
+                  "object": "Server.ERROR",
+                  "value": '${response.body.toString()}: ${response.statusCode}'
+                }
+              ]
+            }
+          ]
+        : response.body['status'] != null &&
+                response.body['status'] == 'OK' &&
+                response.body['validationReport'] != null
+            ? [
+                {
+                  "responseType": "ImportSummary",
+                  "status": "SUCCESS",
+                  "reference": eventIds[0],
+                  "enrollments": {
+                    "responseType": "ImportSummary",
+                    "status": "ERROR",
+                    "imported": 0,
+                    "updated": 1,
+                    "ignored": 0,
+                    "deleted": 0,
+                    "importSummaries:": [
+                      {
+                        "responseType": "ImportSummary",
+                        "status": "SUCCESS",
+                        "importCount": {
+                          "imported": 0,
+                          "updated": 1,
+                          "ignored": 0,
+                          "deleted": 0
+                        },
+                        "conflicts": [],
+                        "reference": "a6vUjBH0UUj"
+                      }
+                    ],
+                    "total": 0
+                  },
+                  "importCount": {
+                    "imported": 1,
+                    "updated": 1,
+                    "ignored": 0,
+                    "deleted": 0
+                  },
+                  "total": 1,
+                  "importSummaries:": [],
+                  "conflicts": []
+                }
+              ]
+            : (response.body?['response']?['importSummaries'] ?? []).toList();
 
     final queue = Queue(parallel: 50);
     num availableItemCount = 0;
 
-    for (var event in events) {
-      final importSummary = importSummaries.lastWhere((summary) =>
-          summary['reference'] != null && summary['reference'] == event.id);
+    if (instanceVersion != null && instanceVersion! >= 38) {
+      final lastestVersionResponse =
+          LatestVersionResponse.fromJson(response.body);
 
-      if (importSummary != null) {
-        availableItemCount++;
-        final syncFailed = importSummary['status'] == 'ERROR';
-        event.synced = !syncFailed;
-        event.dirty = true;
-        event.syncFailed = syncFailed;
-        event.lastSyncDate = DateTime.now().toIso8601String().split('.')[0];
-        event.lastSyncSummary = EventImportSummary.fromJson(importSummary);
-        await queue.add(() => EventQuery().setData(event).save());
-      }
+      final objectReport = lastestVersionResponse
+          .bundleReport?.typeReportMap?.event?.objectReports;
+
+      events.forEach((event) {
+        final importSummary =
+            objectReport?.lastWhere((summary) => summary.uid == event.id);
+        if (importSummary != null) {
+          availableItemCount++;
+          final syncFailed = lastestVersionResponse.status == 'ERROR';
+          event.synced = !syncFailed;
+          event.dirty = true;
+          event.syncFailed = syncFailed;
+          event.lastSyncDate = DateTime.now().toIso8601String();
+          event.lastUpdated = DateTime.now().toIso8601String();
+          queue.add(() => EventQuery(database: database).setData(event).save());
+        }
+      });
+    } else {
+      events.forEach((event) {
+        final importSummary = importSummaries.lastWhere(
+          (summary) =>
+              summary['reference'] != null && summary['reference'] == event.id,
+          orElse: () => null,
+        );
+
+        if (importSummary != null) {
+          availableItemCount++;
+          final syncFailed = importSummary['status'] == 'ERROR';
+          event.synced = !syncFailed;
+          event.dirty = true;
+          event.syncFailed = syncFailed;
+          event.lastSyncDate = DateTime.now().toIso8601String();
+          event.lastUpdated = DateTime.now().toIso8601String();
+          event.lastSyncSummary = EventImportSummary.fromJson(importSummary);
+
+          queue.add(() => EventQuery(database: database).setData(event).save());
+        }
+      });
     }
-
-    // ! START: IMPROVE APPROACH
-    // events.forEach((event) {
-    //   final importSummary = importSummaries.lastWhere((summary) =>
-    //       summary['reference'] != null && summary['reference'] == event.id);
-
-    //   if (importSummary != null) {
-    //     availableItemCount++;
-    //     final syncFailed = importSummary['status'] == 'ERROR';
-    //     event.synced = !syncFailed;
-    //     event.dirty = true;
-    //     event.syncFailed = syncFailed;
-    //     event.lastSyncDate = DateTime.now().toIso8601String().split('.')[0];
-    //     event.lastSyncSummary = EventImportSummary.fromJson(importSummary);
-    //     queue.add(() => EventQuery().setData(event).save());
-    //   }
-    // });
-    // ! END: IMPROVE APPROACH
 
     if (availableItemCount == 0) {
       queue.cancel();
@@ -225,11 +321,7 @@ class EventQuery extends BaseQuery<Event> {
             percentage: 100),
         true);
 
-    // START: IMPROVE APPROACH
-    // final fetchedEvents = (await EventQuery().byIds(eventIds).get());
-    // return await EventQuery().byIds(eventIds).get();
-    // END: IMPROVE APPROACH
-    return events;
+    return await EventQuery(database: database).byIds(eventIds).get();
   }
 
   void printWrapped(String text) {

@@ -1,9 +1,12 @@
 import 'package:d2_touch/modules/metadata/data_element/queries/data_element.query.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DataElementModule {
-  static createTables() async {
-    await DataElementQuery().createTable();
+  Database? database;
+  DataElementModule({this.database, String? locale});
+  static createTables({required Database database}) async {
+    await DataElementQuery(database: database).createTable();
   }
 
-  DataElementQuery get dataElement => DataElementQuery();
+  DataElementQuery get dataElement => DataElementQuery(database: database);
 }

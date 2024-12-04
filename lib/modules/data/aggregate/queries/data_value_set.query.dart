@@ -2,6 +2,7 @@ import 'package:d2_touch/core/annotations/index.dart';
 import 'package:d2_touch/core/utilities/repository.dart';
 import 'package:d2_touch/modules/data/aggregate/entities/data_value.entity.dart';
 import 'package:d2_touch/modules/data/aggregate/entities/data_value_set.entity.dart';
+import 'package:d2_touch/modules/data/aggregate/models/data_value_set_import_summary.dart';
 import 'package:d2_touch/shared/models/request_progress.model.dart';
 import 'package:d2_touch/shared/queries/base.query.dart';
 import 'package:d2_touch/shared/utilities/http_client.util.dart';
@@ -22,7 +23,7 @@ class DataValueSetQuery extends BaseQuery<DataValueSet> {
   }
 
   DataValueSetQuery withDataValues() {
-    final dataValue = Repository<DataValue>();
+    final dataValue = Repository<DataValue>(database: database as Database);
 
     final Column? relationColumn = dataValue.columns.firstWhere((column) {
       return column.relation?.referencedEntity?.tableName == this.tableName;
@@ -101,6 +102,9 @@ class DataValueSetQuery extends BaseQuery<DataValueSet> {
 
     final data = response.body;
 
+    if (data != null && data['status'] != null && data['status'] == 'ERROR') {
+      return [];
+    }
 
     callback(
         RequestProgress(
@@ -110,7 +114,6 @@ class DataValueSetQuery extends BaseQuery<DataValueSet> {
             status: '',
             percentage: 50),
         false);
-
     data['dirty'] = false;
     data['synced'] = true;
     this.data = DataValueSet.fromJson(data);
@@ -130,7 +133,7 @@ class DataValueSetQuery extends BaseQuery<DataValueSet> {
         RequestProgress(
             resourceName: this.apiResourceName as String,
             message:
-                '${this.apiResourceName?.toLowerCase()}(${this.dataSet}-${this.orgUnit}-${this.period}) successifully saved into the database',
+                '${this.apiResourceName?.toLowerCase()}(${this.dataSet}-${this.orgUnit}-${this.period}) successfully saved into the database',
             status: '',
             percentage: 100),
         true);
@@ -164,28 +167,37 @@ class DataValueSetQuery extends BaseQuery<DataValueSet> {
       await queue.onComplete;
     }
 
-    return await DataValueSetQuery().byIds(dataValueSetIds).get();
+    return await DataValueSetQuery(database: database)
+        .byIds(dataValueSetIds)
+        .get();
   }
 
   uploadOne(DataValueSet dataValueSet, {Dio? dioTestClient}) async {
     final uploadFormat = DataValueSet.toUpload(dataValueSet);
 
-
     final response = await HttpClient.post(
         this.apiResourceName as String, uploadFormat,
         database: this.database, dioTestClient: dioTestClient);
 
+    final importSummary = response.body?['response'];
 
-
-    final importSummary = response.body;
-    final syncFailed = importSummary['status'] == 'ERROR';
+    bool syncFailed = true;
+    if (!((response.statusCode >= 200 && response.statusCode < 300) ||
+        response.statusCode == 409)) {
+      syncFailed = true;
+    } else {
+      syncFailed = importSummary['status'] == 'ERROR' ||
+          importSummary['status'] == 'WARNING';
+    }
     dataValueSet.synced = !syncFailed;
-    dataValueSet.dirty = syncFailed;
+    dataValueSet.dirty = true;
     dataValueSet.syncFailed = syncFailed;
-    dataValueSet.lastSyncDate = DateTime.now().toIso8601String().split('.')[0];
-    dataValueSet.lastSyncSummary = importSummary.toString();
+    dataValueSet.lastSyncDate = DateTime.now().toIso8601String();
+    dataValueSet.lastUpdated = dataValueSet.lastSyncDate;
+    dataValueSet.lastSyncSummary =
+        DataValueSetImportSummary.fromJson(importSummary);
 
-    return DataValueSetQuery()
+    return DataValueSetQuery(database: database)
         .setData(dataValueSet)
         .save(saveOptions: SaveOptions(skipLocalSyncStatus: true));
   }

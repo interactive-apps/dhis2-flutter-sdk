@@ -12,8 +12,7 @@ class DatabaseManager {
   bool inMemory = false;
   DatabaseFactory? databaseFactory;
 
-  static final DatabaseManager _databaseInstance =
-      new DatabaseManager._internal();
+  static DatabaseManager? _databaseInstance;
 
   static Database? _database;
   final _initDatabaseMemoizer = AsyncMemoizer<Database>();
@@ -22,22 +21,25 @@ class DatabaseManager {
       {String? databaseName,
       bool? inMemory,
       DatabaseFactory? databaseFactory}) {
-    if (databaseName != null) {
-      _databaseInstance.databaseName = databaseName;
+    if (_databaseInstance == null) {
+      _databaseInstance = new DatabaseManager._internal();
+      if (databaseName != null) {
+        _databaseInstance?.databaseName = databaseName;
+      }
+
+      if (inMemory != null) {
+        _databaseInstance?.inMemory = inMemory;
+      }
+
+      _databaseInstance?.databaseFactory = databaseFactory;
     }
 
-    if (inMemory != null) {
-      _databaseInstance.inMemory = inMemory;
-    }
-
-    _databaseInstance.databaseFactory = databaseFactory;
-
-    return _databaseInstance;
+    return _databaseInstance as DatabaseManager;
   }
 
   DatabaseManager._internal();
 
-  static DatabaseManager get instance => _databaseInstance;
+  static DatabaseManager? get instance => _databaseInstance;
 
   Future<Database> get database async {
     if (_database != null) {
@@ -50,8 +52,14 @@ class DatabaseManager {
   }
 
   initializeDatabase() async {
-    if (this.databaseFactory != null) {
-      return databaseFactory?.openDatabase(inMemoryDatabasePath);
+    if (databaseFactory != null) {
+      bool databaseExist = await databaseFactory!.databaseExists(databaseName);
+
+      if (databaseExist) {
+        await databaseFactory?.deleteDatabase(databaseName);
+      }
+      return databaseFactory?.openDatabase(databaseName,
+          options: OpenDatabaseOptions(onConfigure: _onConfigure));
     }
 
     Directory documentDirectory = await getApplicationDocumentsDirectory();
@@ -72,7 +80,15 @@ class DatabaseManager {
     await db.execute("PRAGMA foreign_keys = OFF");
   }
 
-  closeDatabase() {}
+  closeDatabase() async {
+    await _database?.close();
+  }
+
+  dispose() async {
+    await _database?.close();
+    await databaseFactory?.deleteDatabase(databaseName);
+    _databaseInstance = null;
+  }
 
   void _createDatabase(Database database, int version) async {}
 }

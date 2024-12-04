@@ -46,7 +46,7 @@ class TrackedEntityAttributeValue extends IdentifiableEntity {
         lastUpdated: json['lastUpdated'],
         trackedEntityInstance: json['trackedEntityInstance'],
         value: json['value'],
-        dirty: json['dirty']);
+        dirty: json['dirty'] ?? false);
   }
 
   Map<String, dynamic> toJson() {
@@ -63,6 +63,11 @@ class TrackedEntityAttributeValue extends IdentifiableEntity {
   }
 
   static toUpload(TrackedEntityAttributeValue attribute) {
-    return {"attribute": attribute.attribute, "value": attribute.value};
+    return {
+      "attribute": attribute.attribute,
+
+      //Replace all helps to sanitize with double quoted strings i.e '"value"' from program rules if any
+      "value": attribute.value.replaceAll("\"", '')
+    };
   }
 }

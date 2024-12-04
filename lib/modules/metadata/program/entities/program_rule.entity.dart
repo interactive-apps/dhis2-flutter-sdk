@@ -33,7 +33,7 @@ class ProgramRule extends IdentifiableEntity {
         id: json['id'],
         name: json['name'],
         description: json['description'],
-        condition: json['condition'],
+        condition: json['condition'] ?? '',
         program: json['program'],
         programRuleActions: List<dynamic>.from(json['programRuleActions'] ?? [])
             .map((programRuleAction) => ProgramRuleAction.fromJson({

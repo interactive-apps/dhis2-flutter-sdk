@@ -1,6 +1,6 @@
-final Map<Object, dynamic> sampleDataValueSetUpload = {
+final sampleDataValueSetUpload = {
   "dataSet": "BfMAe6Itzgt",
-  "period": "202201",
+  "period": "202202",
   "orgUnit": "bG0PlyD0iP3",
   "dataValues": [
     {

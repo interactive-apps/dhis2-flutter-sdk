@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:d2_touch/core/annotations/index.dart';
 import 'package:d2_touch/shared/entities/identifiable.entity.dart';
 
@@ -28,7 +30,8 @@ class DataElement extends IdentifiableEntity {
       required this.aggregationType,
       this.description,
       required this.valueType,
-      required dirty})
+      required dirty,
+      dynamic translations})
       : super(
             id: id,
             name: name,
@@ -37,7 +40,8 @@ class DataElement extends IdentifiableEntity {
             code: code,
             created: created,
             lastUpdated: lastUpdated,
-            dirty: dirty);
+            dirty: dirty,
+            translations: translations);
 
   factory DataElement.fromJson(Map<String, dynamic> json) {
     return DataElement(
@@ -50,11 +54,13 @@ class DataElement extends IdentifiableEntity {
         valueType: json['valueType'],
         aggregationType: json['aggregationType'],
         description: json['description'],
-        dirty: json['dirty']);
+        dirty: json['dirty'],
+        translations: json['translations']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+
     data['lastUpdated'] = this.lastUpdated;
     data['id'] = this.id;
     data['created'] = this.created;
@@ -66,6 +72,7 @@ class DataElement extends IdentifiableEntity {
     data['aggregationType'] = this.aggregationType;
     data['description'] = this.description;
     data['dirty'] = this.dirty;
+    data['translations'] = jsonEncode(this.translations);
 
     return data;
   }

@@ -16,7 +16,7 @@ void main() async {
   var databaseFactory = databaseFactoryFfi;
   var db = await databaseFactory.openDatabase(inMemoryDatabasePath);
 
-  final repository = Repository<OrganisationUnit>();
+  final repository = Repository<OrganisationUnit>(database: db);
 
   final columns =
       repository.columns.map((column) => column.columnQueryExpresion);
@@ -31,6 +31,7 @@ void main() async {
       'displayName TEXT',
       'shortName TEXT',
       'code TEXT',
+      'translations TEXT',
       'level INTEGER NOT NULL',
       'path TEXT NOT NULL',
       'externalAccess BOOLEAN',
@@ -48,7 +49,7 @@ void main() async {
 
   test('should return create query expression', () {
     expect(repository.createQuery,
-        'CREATE TABLE IF NOT EXISTS organisationunit (id TEXT PRIMARY KEY NOT NULL, dirty BOOLEAN NOT NULL, lastUpdated TEXT, created TEXT, name TEXT NOT NULL, displayName TEXT, shortName TEXT, code TEXT, level INTEGER NOT NULL, path TEXT NOT NULL, externalAccess BOOLEAN, openingDate TEXT NOT NULL, geometry TEXT, parent TEXT)');
+        'CREATE TABLE IF NOT EXISTS organisationunit (id TEXT PRIMARY KEY NOT NULL, dirty BOOLEAN NOT NULL, lastUpdated TEXT, created TEXT, name TEXT NOT NULL, displayName TEXT, shortName TEXT, code TEXT, translations TEXT, level INTEGER NOT NULL, path TEXT NOT NULL, externalAccess BOOLEAN, openingDate TEXT NOT NULL, geometry TEXT, parent TEXT)');
   });
 
   await repository.create(database: db);

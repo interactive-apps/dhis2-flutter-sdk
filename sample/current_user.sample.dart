@@ -54,7 +54,12 @@ Map<String, dynamic> userData = {
     {"name": "_PROGRAM_Child Health Tracker", "id": "H9XnHoWRKCg"}
   ],
   "organisationUnits": [
-    {"code": "OU_525", "name": "Sierra Leone", "id": "ImspTQPwCqd"}
+    {
+      "code": "OU_525",
+      "name": "Sierra Leone",
+      "id": "ImspTQPwCqd",
+      "parent": {"id": "utspTQPwCqd"}
+    }
   ],
   "dataViewOrganisationUnits": [],
   "authorities": [

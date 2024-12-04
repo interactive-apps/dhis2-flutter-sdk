@@ -27,6 +27,15 @@ class ProgramRuleAction extends IdentifiableEntity {
   String? dataElement;
 
   @Column(nullable: true)
+  String? section;
+
+  @Column(nullable: true)
+  String? option;
+
+  @Column(nullable: true)
+  String? optionGroup;
+
+  @Column(nullable: true)
   String? trackedEntityAttribute;
 
   @ManyToOne(table: ProgramRule, joinColumnName: 'programRule')
@@ -44,6 +53,9 @@ class ProgramRuleAction extends IdentifiableEntity {
       this.dataElement,
       this.trackedEntityAttribute,
       this.data,
+      this.section,
+      this.option,
+      this.optionGroup,
       required bool dirty})
       : super(id: id, name: name, dirty: dirty);
 
@@ -60,6 +72,21 @@ class ProgramRuleAction extends IdentifiableEntity {
             ? json['dataElement'] is String
                 ? json['dataElement']
                 : json['dataElement']['id']
+            : null,
+        option: json['option'] != null
+            ? json['option'] is String
+                ? json['option']
+                : json['option']['id']
+            : null,
+        section: json['section'] != null
+            ? json['section'] is String
+                ? json['section']
+                : json['section']['id']
+            : null,
+        optionGroup: json['optionGroup'] != null
+            ? json['optionGroup'] is String
+                ? json['optionGroup']
+                : json['optionGroup']['id']
             : null,
         trackedEntityAttribute: json['trackedEntityAttribute'] != null
             ? json['trackedEntityAttribute'] is String
@@ -82,6 +109,9 @@ class ProgramRuleAction extends IdentifiableEntity {
     data['programRuleActionType'] = this.programRuleActionType;
     data['evaluationTime'] = this.evaluationTime;
     data['dataElement'] = this.dataElement;
+    data['option'] = this.option;
+    data['optionGroup'] = this.optionGroup;
+    data['section'] = this.section;
     data['trackedEntityAttribute'] = this.trackedEntityAttribute;
     data['dirty'] = this.dirty;
     data['data'] = this.data;

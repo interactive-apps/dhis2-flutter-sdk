@@ -11,7 +11,8 @@ class ProgramStageDataElementQuery extends BaseQuery<ProgramStageDataElement> {
       : super(database: database);
 
   ProgramStageDataElementQuery withOptions() {
-    final dataElementOption = Repository<ProgramStageDataElementOption>();
+    final dataElementOption = Repository<ProgramStageDataElementOption>(
+        database: database as Database);
 
     final Column? relationColumn = dataElementOption.columns.firstWhere(
         (column) =>

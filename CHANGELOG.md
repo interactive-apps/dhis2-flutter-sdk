@@ -1,3 +1,80 @@
+## [1.1.9] 04/12/2024
+
+- Add nullable support in program module
+- Improve perfomance 
+
+## [1.1.8] 14/10/2024 - Happy Nyerere Day
+
+- Add APiToken grant type to HTTP requests for personal access tokens
+
+## [1.1.7] 20/09/2024
+
+- Add timestamp to check token expiry time
+- Add implementation to renew tokens on expiry
+
+## [1.1.6] - 09/09/2024
+
+- Add put method in httpClient
+
+## [1.1.5] 04/09/2024
+
+- Improve runtime type checking for values in user orgunit model
+- Add fallback for dirty value
+
+## [1.1.4] 04/09/2024
+
+- Fix error on type of user organisations in user entity
+
+## [1.1.3] - 09/08/2024
+
+- Add delete function in httpClient
+- Add d2 evaluation and parsing date objects
+- Add option group module
+- Add option group column to program rule action
+- Fix error saving relationships
+- Add functionality to re-evaluate math expressions for not operators
+- Add program rule expression execution for arithmetics
+- Fix error saving dataValueSets for missing filters
+
+## [1.1.2] - 13/02/2024
+
+- Add checks on dynamic data to check for possible null values
+- Add checks for availability of response body before getting resource
+- Add saved attribute to tracked entity and event data
+- Add default import summaries for uknown network errors
+- Improve insert performance by wrapping in try catch
+- Remove hardcoded program status
+- Use a different field for user selected fields to avoid conflicts
+- Add functionality for user fields selection on download
+
+## [1.1.1] - 07/08/2023
+
+- Add support to upload relationships when uploading tracker entity instances
+
+## [1.1.0] - 06/08/2023
+
+- Add support to download program relationships
+- Add support to donwload and upload tracker relationships
+- Fix issue on clearing of shared preference on log out
+- Fix data synchronization issues when local data is in dirty state
+
+### Fixes
+
+- Improve events program rules queueing on failing rules response
+- Fix error with missing code column in user authority
+
+## [1.0.3] - 23/03/2023
+
+### Fixes
+
+- Improve events program rules queueing on failing rules response
+- Fix error with missing code column in user authority
+
+### New
+
+- Add job title and phone number properties to user entity
+- Add data store module
+
 ## [1.0.2] - 17/09/2022
 
 ## [1.0.0-beta.13] - 09/09/2022

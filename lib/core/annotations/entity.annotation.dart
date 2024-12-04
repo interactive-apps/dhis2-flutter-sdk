@@ -51,10 +51,12 @@ class Entity {
 
       if (value is VariableMirror) {
         VariableMirror variableMirror = value;
-        Column column =
-            Column.getColumn(variableMirror, key, ignoreRelationColumns)
-                as Column;
-        columns.add(column);
+        Column? column =
+            Column.getColumn(variableMirror, key, ignoreRelationColumns);
+
+        if (column != null) {
+          columns.add(column);
+        }
       }
     }
 
@@ -63,10 +65,12 @@ class Entity {
 
       if (value is VariableMirror) {
         VariableMirror variableMirror = value;
-        Column column =
-            Column.getColumn(variableMirror, key, ignoreRelationColumns)
-                as Column;
-        columns.add(column);
+        Column? column =
+            Column.getColumn(variableMirror, key, ignoreRelationColumns);
+
+        if (column != null) {
+          columns.add(column);
+        }
       }
     }
 

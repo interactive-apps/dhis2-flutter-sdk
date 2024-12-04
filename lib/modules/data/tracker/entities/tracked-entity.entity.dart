@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:d2_touch/core/annotations/index.dart';
+import 'package:d2_touch/modules/data/tracker/entities/tracked_entity_instance_relationship.entity.dart';
 import 'package:d2_touch/modules/data/tracker/models/tracked_entity_instance_import_summary.model.dart';
 import 'package:d2_touch/shared/entities/identifiable.entity.dart';
 
@@ -43,11 +44,19 @@ class TrackedEntityInstance extends IdentifiableEntity {
   @Column(nullable: true)
   String? lastSyncDate;
 
+  /// A value that detects whether the user has marked the entity has saved or not.
+  /// This is useful for when you want to sync specific data to remote server and leave others.
+  @Column()
+  bool? saved;
+
   @OneToMany(table: TrackedEntityAttributeValue)
   List<TrackedEntityAttributeValue>? attributes;
 
   @OneToMany(table: Enrollment)
   List<Enrollment>? enrollments;
+
+  @OneToMany(table: TrackedEntityInstanceRelationship)
+  List<TrackedEntityInstanceRelationship>? relationships;
 
   TrackedEntityInstance(
       {String? id,
@@ -66,14 +75,19 @@ class TrackedEntityInstance extends IdentifiableEntity {
       this.inactive,
       this.enrollments,
       this.attributes,
-      this.transfer})
+      this.transfer,
+      this.saved,
+      this.relationships,
+      bool? skipDateUpdate})
       : super(
             id: id,
             name: name,
             created: created,
             lastUpdated: lastUpdated,
+            skipDateUpdate: skipDateUpdate,
             dirty: dirty) {
     this.trackedEntityInstance = this.trackedEntityInstance ?? this.id;
+    this.saved = this.saved ?? false;
   }
 
   transferOrgUnit(String orgUnit) {
@@ -92,13 +106,14 @@ class TrackedEntityInstance extends IdentifiableEntity {
     return TrackedEntityInstance(
         id: json['id'] ?? json['trackedEntityInstance'],
         name: json['trackedEntityInstance'],
-        created: json['created'],
-        lastUpdated: json['lastUpdated'],
+        created: json['created'] ?? json['createdAt'],
+        lastUpdated: json['lastUpdated'] ?? json['updatedAt'],
         orgUnit: json['orgUnit'],
         trackedEntityInstance: json['trackedEntityInstance'],
         trackedEntityType: json['trackedEntityType'],
         deleted: json['deleted'],
-        synced: json['synced'],
+        synced: json['synced'] ?? true,
+        saved: json['saved'],
         transfer: json['transfer'],
         syncFailed: json['syncFailed'],
         lastSyncSummary: lastSyncSummary,
@@ -108,8 +123,10 @@ class TrackedEntityInstance extends IdentifiableEntity {
             ? List<dynamic>.from(json['enrollments'])
                 .map((enrollment) => Enrollment.fromJson({
                       ...enrollment,
+                      'trackedEntityType': enrollment['trackedEntityType'] ??
+                          json['trackedEntityType'],
                       'dirty': enrollment['dirty'] ?? json['dirty'] ?? false,
-                      'synced': json['synced']
+                      'synced': json['synced'] ?? true
                     }))
                 .toList()
             : null,
@@ -118,11 +135,20 @@ class TrackedEntityInstance extends IdentifiableEntity {
                   ...attribute,
                   'id': attribute['id'] ??
                       '${json['trackedEntityInstance']}_${attribute['attribute']}',
-                  'trackedEntityInstance': json['trackedEntityInstance'],
+                  'trackedEntityInstance':
+                      json['trackedEntityInstance'] ?? json['trackedEntity'],
                   'dirty': attribute['dirty'] ?? false
                 }))
             .toList(),
-        dirty: json['dirty']);
+        relationships: List<dynamic>.from(json['relationships'] ?? [])
+            .map((relationship) => TrackedEntityInstanceRelationship.fromJson({
+                  ...relationship,
+                  'dirty': relationship['dirty'] ?? json['dirty'] ?? false,
+                  'synced': json['synced'] ?? true
+                }))
+            .toList(),
+        skipDateUpdate: json['skipDateUpdate'],
+        dirty: json['dirty'] ?? false);
   }
 
   Map<String, dynamic> toJson() {
@@ -145,9 +171,11 @@ class TrackedEntityInstance extends IdentifiableEntity {
     data['enrollments'] = this.enrollments;
     data['attributes'] = this.attributes;
     data['dirty'] = this.dirty;
+    data['saved'] = this.saved;
     data['created'] = this.created;
     data['lastUpdated'] = this.lastUpdated;
     data['transfer'] = this.transfer;
+    data['relationships'] = this.relationships;
     return data;
   }
 
@@ -160,9 +188,34 @@ class TrackedEntityInstance extends IdentifiableEntity {
       "attributes": (trackedEntityInstance.attributes ?? [])
           .map((attribute) => TrackedEntityAttributeValue.toUpload(attribute))
           .toList(),
-      "enrollments": (trackedEntityInstance.enrollments ?? [])
-          .map((enrollment) => Enrollment.toUpload(enrollment, events))
-          .toList()
+      "enrollments": toUploadEnrollment(trackedEntityInstance, events),
+      "relationships": (trackedEntityInstance.relationships ?? [])
+          .map((relationship) =>
+              TrackedEntityInstanceRelationship.toUpload(relationship))
+          .toList(),
     };
+  }
+
+  static toUploadWithoutEnrollment(
+      TrackedEntityInstance trackedEntityInstance, List<Event>? events) {
+    return {
+      "trackedEntityType": trackedEntityInstance.trackedEntityType,
+      "orgUnit": trackedEntityInstance.orgUnit,
+      "trackedEntityInstance": trackedEntityInstance.trackedEntityInstance,
+      "attributes": (trackedEntityInstance.attributes ?? [])
+          .map((attribute) => TrackedEntityAttributeValue.toUpload(attribute))
+          .toList(),
+      "relationships": (trackedEntityInstance.relationships ?? [])
+          .map((relationship) =>
+              TrackedEntityInstanceRelationship.toUpload(relationship))
+          .toList(),
+    };
+  }
+
+  static toUploadEnrollment(
+      TrackedEntityInstance trackedEntityInstance, List<Event>? events) {
+    return (trackedEntityInstance.enrollments ?? [])
+        .map((enrollment) => Enrollment.toUpload(enrollment, events))
+        .toList();
   }
 }

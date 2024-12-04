@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:d2_touch/core/annotations/index.dart';
-import 'package:d2_touch/core/database/database_manager.dart';
 import 'package:d2_touch/core/utilities/repository_util.dart';
 import 'package:d2_touch/shared/entities/base.entity.dart';
 import 'package:d2_touch/shared/utilities/merge_mode.util.dart';
@@ -22,7 +23,7 @@ abstract class BaseRepository<T extends BaseEntity> {
 
   String get createQuery;
 
-  Future<Database> get database;
+  late Database database;
 
   Future<dynamic> create({Database database});
 
@@ -70,8 +71,10 @@ abstract class BaseRepository<T extends BaseEntity> {
 }
 
 class Repository<T extends BaseEntity> extends BaseRepository<T> {
-  @override
-  Future<Database> get database => DatabaseManager.instance.database;
+  late Database database;
+  Repository({required this.database});
+  // @override
+  // Future<Database> get database => DatabaseManager.instance.database;
 
   @override
   Future<List<T>> findAll(
@@ -80,7 +83,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       Map<String, SortOrder>? sortOrder,
       Database? database,
       List<ColumnRelation>? relations}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     return this.find(
         filters: filters,
@@ -98,7 +101,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       Map<String, SortOrder>? sortOrder,
       Database? database,
       List<ColumnRelation>? relations}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     if (id != null) {
       final queryResult = await db.query(this.entity.tableName,
@@ -187,7 +190,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
           relation.relationType == RelationType.OneToMany
               ? relation.primaryKey
               : relation.attributeName];
-      final Database db = database != null ? database : await this.database;
+      final Database db = database != null ? database : this.database;
 
       final whereParameters =
           '${relation.referencedColumn} = "$referencedValue"';
@@ -205,6 +208,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
               ? relationResult[0]
               : null
           : relationResult);
+
       resultMap['data'] = dataResult;
 
       return resultMap;
@@ -227,7 +231,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       final String? whereParameters = QueryFilter.getWhereParameters(
           relation.referencedEntityColumns as List<Column>, filters);
 
-      final Database db = database != null ? database : await this.database;
+      final Database db = database != null ? database : this.database;
 
       final newItem = await findWhereInRelation(
           database: db,
@@ -252,7 +256,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
     String? orderParameters,
     List<String>? fields,
   }) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
     return (await db.query(entity.tableName,
         where: whereParameters, orderBy: orderParameters, columns: fields));
   }
@@ -263,11 +267,10 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       String? orderParameters,
       List<String>? fields,
       List<ColumnRelation>? relations}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     final dataResults = (await db.query(this.entity.tableName,
         where: whereParameters, orderBy: orderParameters, columns: fields));
-
     final List<String> dataIds =
         dataResults.map((dataResult) => dataResult['id'].toString()).toList();
 
@@ -301,7 +304,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       List<String>? fields,
       Database? database,
       List<ColumnRelation>? relations}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     var results = await this.find(id: id, fields: fields, database: db);
 
@@ -311,7 +314,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
   @override
   Future<int> insertMany(
       {required List<T> entities, Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     await Future.forEach(
         entities, ((T entity) => insertOne(entity: entity, database: db)));
@@ -323,36 +326,68 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
   Future<int> insertOne({required T entity, Database? database}) async {
     Map<String, dynamic> data = this
         .sanitizeIncomingData(entity: entity.toJson(), columns: this.columns);
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
-    final saveDataResponse = await db.insert(this.entity.tableName, data);
+    int saveDataResponse = 0;
+    try {
+      saveDataResponse = await db.insert(this.entity.tableName, data);
+    } catch (e) {}
 
     if (this.oneToManyColumns.isEmpty) {
       return saveDataResponse;
     }
 
-    final queue = Queue(parallel: 50);
+    final reltionQueue = Queue(parallel: 1);
     num availableItemCount = 0;
 
-    this.oneToManyColumns.forEach((Column column) {
-      final List data = entity.toJson()[column.relation?.attributeName] ?? [];
-      if (data.isNotEmpty) {
-        availableItemCount++;
-        data.forEach((dataItem) {
-          queue.add(() => saveRelationData(
-              columnRelation: column.relation as ColumnRelation,
-              entity: dataItem,
-              database: db));
-        });
-      }
-    });
+    try {
+      this.oneToManyColumns.forEach((Column column) {
+        final List data = entity.toJson()[column.relation?.attributeName] ?? [];
+        if (data.isNotEmpty) {
+          availableItemCount++;
+          data.forEach((dataItem) {
+            try {
+              reltionQueue.add(() => saveRelationData(
+                  columnRelation: column.relation as ColumnRelation,
+                  entity: dataItem,
+                  database: db));
+            } catch (e) {
+              ClassMirror classMirror =
+                  AnnotationReflectable.reflectType(T) as ClassMirror;
+
+              reltionQueue.add(() => saveRelationData(
+                  columnRelation: column.relation as ColumnRelation,
+                  entity: classMirror.newInstance('fromJson', [dataItem]) as T,
+                  database: db));
+            }
+          });
+        }
+      });
+    } catch (e) {
+      this.oneToManyColumns.forEach((Column column) {
+        final List data = entity.toJson()[column.relation?.attributeName] ?? [];
+
+        ClassMirror classMirror =
+            AnnotationReflectable.reflectType(T) as ClassMirror;
+
+        if (data.isNotEmpty) {
+          availableItemCount++;
+          data.forEach((dataItem) {
+            reltionQueue.add(() => saveRelationData(
+                columnRelation: column.relation as ColumnRelation,
+                entity: classMirror.newInstance('fromJson', [dataItem]) as T,
+                database: db));
+          });
+        }
+      });
+    }
 
     if (availableItemCount == 0) {
-      queue.cancel();
+      reltionQueue.cancel();
       return saveDataResponse;
     }
 
-    await queue.onComplete;
+    await reltionQueue.onComplete;
     return saveDataResponse;
   }
 
@@ -364,7 +399,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
         entity: entity.toJson(),
         columns: columnRelation.referencedEntityColumns as List<Column>);
 
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     var result = await db.query(
         columnRelation.referencedEntity?.tableName as String,
@@ -373,15 +408,17 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
     dynamic saveDataResponse;
     if (result.length == 0) {
-      saveDataResponse = await db.insert(
-          columnRelation.referencedEntity?.tableName as String, data);
+      try {
+        saveDataResponse = await db.insert(
+            columnRelation.referencedEntity?.tableName as String, data);
+      } catch (e) {}
     } else {
       final lastUpdated = result[0]['lastUpdated'];
       if (lastUpdated != null) {
         final currentLastUpdatedDate = DateTime.parse(lastUpdated as String);
 
-        final newLastUpdatedDate =
-            DateTime.parse(data['lastUpdated'] as String);
+        final newLastUpdatedDate = DateTime.parse(
+            data['lastUpdated'] ?? DateTime.now().toIso8601String());
 
         if (currentLastUpdatedDate
                 .difference(newLastUpdatedDate)
@@ -390,8 +427,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
           saveDataResponse = 1;
         } else {
           if (data['dirty'] == 1) {
-            data['lastUpdated'] =
-                DateTime.now().toIso8601String().split('.')[0];
+            data['lastUpdated'] = DateTime.now().toIso8601String();
           }
           saveDataResponse = await db.update(
             columnRelation.referencedEntity?.tableName as String,
@@ -445,7 +481,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
   @override
   Future<int> deleteByIds(
       {required List<String> ids, Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     await db.delete(this.entity.tableName,
         where: 'id IN (?)', whereArgs: [ids.join(',')]);
@@ -455,7 +491,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
   @override
   Future<int> deleteById({required String id, Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     await db.delete(this.entity.tableName, where: 'id = ?', whereArgs: [id]);
 
@@ -464,7 +500,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
   @override
   Future<int> deleteAll({Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     await db.delete(this.entity.tableName);
 
@@ -478,7 +514,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       int? chunk,
       required MergeMode mergeMode,
       SaveOptions? saveOptions}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     if (entities.isEmpty) {
       return 1;
@@ -505,7 +541,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
       Database? database,
       required MergeMode mergeMode,
       SaveOptions? saveOptions}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     var result = await this.findById(id: entity.id as String, database: db);
 
@@ -549,7 +585,6 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
         newEntity = classMirror.newInstance('fromJson', [entityMap]) as T;
       }
-
       return this.updateOne(entity: newEntity, database: db);
     }
 
@@ -559,7 +594,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
   @override
   Future<int> updateMany(
       {required List<T> entities, Database? database, int? chunk}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     final queue = Queue(parallel: chunk ?? 500);
 
@@ -574,12 +609,13 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
   @override
   Future<int> updateOne({required T entity, Database? database}) async {
-    if (entity.dirty == true) {
-      entity.lastUpdated = DateTime.now().toIso8601String().split('.')[0];
+    if (entity.dirty == true && entity.lastUpdated == null) {
+      entity.lastUpdated = DateTime.now().toIso8601String();
     }
     Map<String, dynamic> data = this
         .sanitizeIncomingData(entity: entity.toJson(), columns: this.columns);
-    final Database db = database != null ? database : await this.database;
+
+    final Database db = database != null ? database : this.database;
     final saveDataResponse = await db.update(
       this.entity.tableName,
       data,
@@ -594,18 +630,45 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
     final queue = Queue(parallel: 50);
     num availableItemCount = 0;
 
-    this.oneToManyColumns.forEach((Column column) {
-      final List data = entity.toJson()[column.relation?.attributeName] ?? [];
-      if (data.isNotEmpty) {
-        availableItemCount++;
-        data.forEach((dataItem) {
-          queue.add(() => saveRelationData(
-              columnRelation: column.relation as ColumnRelation,
-              entity: dataItem,
-              database: db));
-        });
-      }
-    });
+    try {
+      this.oneToManyColumns.forEach((Column column) {
+        final List data = entity.toJson()[column.relation?.attributeName] ?? [];
+        ClassMirror classMirror =
+            AnnotationReflectable.reflectType(T) as ClassMirror;
+        if (data.isNotEmpty) {
+          availableItemCount++;
+          data.forEach((dataItem) {
+            try {
+              queue.add(() => saveRelationData(
+                  columnRelation: column.relation as ColumnRelation,
+                  entity: dataItem,
+                  database: db));
+            } catch (e) {
+              queue.add(() => saveRelationData(
+                  columnRelation: column.relation as ColumnRelation,
+                  entity: classMirror.newInstance('fromJson', [dataItem]) as T,
+                  database: db));
+            }
+          });
+        }
+      });
+    } catch (e) {
+      this.oneToManyColumns.forEach((Column column) {
+        final List data = entity.toJson()[column.relation?.attributeName] ?? [];
+        ClassMirror classMirror =
+            AnnotationReflectable.reflectType(T) as ClassMirror;
+
+        if (data.isNotEmpty) {
+          availableItemCount++;
+          data.forEach((dataItem) {
+            queue.add(() => saveRelationData(
+                columnRelation: column.relation as ColumnRelation,
+                entity: classMirror.newInstance('fromJson', [dataItem]) as T,
+                database: db));
+          });
+        }
+      });
+    }
 
     if (availableItemCount == 0) {
       queue.cancel();
@@ -633,7 +696,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
   @override
   Future create({Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     await db.transaction((txn) async {
       var batch = txn.batch();
@@ -697,7 +760,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
 
   @override
   Future<int> count({Database? database}) async {
-    final Database db = database != null ? database : await this.database;
+    final Database db = database != null ? database : this.database;
 
     final countResult = await db
         .rawQuery('SELECT COUNT(*) as count FROM ${this.entity.tableName}');
@@ -706,7 +769,7 @@ class Repository<T extends BaseEntity> extends BaseRepository<T> {
   }
 
   Future<List<Map>> rawQuery({required String query}) async {
-    final Database db = await this.database;
+    final Database db = this.database;
 
     final List<Map> queryResult = await db.rawQuery(query.toString());
 

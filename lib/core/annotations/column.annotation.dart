@@ -5,7 +5,7 @@ import 'package:reflectable/reflectable.dart';
 
 import 'entity.annotation.dart';
 
-enum ColumnType { TEXT, INTEGER, BOOLEAN }
+enum ColumnType { TEXT, INTEGER, BOOLEAN, JSON }
 
 enum RelationType { OneToMany, ManyToOne, OneToOne }
 
@@ -75,6 +75,8 @@ class Column {
         return 'INTEGER';
       case ColumnType.BOOLEAN:
         return 'BOOLEAN';
+      case ColumnType.JSON:
+        return 'JSON';
       default:
         return 'TEXT';
     }
@@ -95,6 +97,10 @@ class Column {
 
   static Column? getColumn(VariableMirror variableMirror, String columnName,
       bool ignoreRelationColumns) {
+    if (variableMirror.metadata.isEmpty) {
+      return null;
+    }
+
     dynamic variableElement = variableMirror.metadata[0];
 
     if (variableElement is Column || variableElement is PrimaryColumn) {

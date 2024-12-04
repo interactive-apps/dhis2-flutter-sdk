@@ -138,7 +138,7 @@ class ProgramStage extends IdentifiableEntity {
               }))
           .toList(),
       repeatable: jsonData['repeatable'],
-      sortOrder: jsonData['sortOrder'],
+      sortOrder: jsonData['sortOrder'] ?? 0,
     );
   }
 

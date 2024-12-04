@@ -108,7 +108,33 @@ final Map<String, dynamic> samplePrograms = {
             "aggregationType": "NONE",
             "generated": false,
             "unique": false,
-            "optionSetValue": false
+            "optionSetValue": false,
+            "translations": [
+              {"property": "NAME", "locale": "en", "value": "First name"},
+              {
+                "property": "DESCRIPTION",
+                "locale": "en",
+                "value": "First name"
+              },
+              {"property": "SHORT_NAME", "locale": "en", "value": "First name"},
+              {
+                "property": "FORM_NAME",
+                "locale": "sw",
+                "value": "Jina la kwanza"
+              },
+              {
+                "property": "SHORT_NAME",
+                "locale": "sw",
+                "value": "Jina la kwanza"
+              },
+              {"property": "FORM_NAME", "locale": "en", "value": "First name"},
+              {
+                "property": "DESCRIPTION",
+                "locale": "sw",
+                "value": "Jina la kwanza"
+              },
+              {"property": "NAME", "locale": "sw", "value": "Jina la kwanza"}
+            ]
           },
           "attributeValues": []
         },
@@ -1767,7 +1793,7 @@ final Map<String, dynamic> sampleFilteredPrograms = {
       "programStages": [
         {
           "lastUpdated": "2021-09-16T09:49:07.706",
-          "id": "A03MvHHogjR",
+          "id": "A03MvHH7gjR",
           "created": "2013-03-04T11:41:07.541",
           "name": "Birth",
           "executionDateLabel": "Report date",
@@ -1818,7 +1844,7 @@ final Map<String, dynamic> sampleFilteredPrograms = {
                 "id": "xE7jOejl9FI",
                 "username": "admin"
               },
-              "programStage": {"id": "A03MvHHogjR"},
+              "programStage": {"id": "A03MvHH7gjR"},
               "favorites": [],
               "programIndicators": [],
               "translations": [],
@@ -2152,7 +2178,7 @@ final Map<String, dynamic> sampleFilteredPrograms = {
         },
         {
           "lastUpdated": "2021-09-16T09:49:07.717",
-          "id": "ZzYYXq4fJie",
+          "id": "A03MvHH7gjR",
           "created": "2013-03-04T11:41:07.541",
           "name": "Baby Postnatal",
           "preGenerateUID": false,

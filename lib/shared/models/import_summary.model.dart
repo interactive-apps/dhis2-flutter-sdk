@@ -4,13 +4,13 @@ import 'import_status.model.dart';
 
 class ImportSummary {
   ImportStatus status;
-  String reference;
+  String? reference;
   ImportAction importAction;
   List<ImportConflict>? conflicts;
   Map<String, dynamic> responseSummary;
   ImportSummary(
       {required this.status,
-      required this.reference,
+      this.reference,
       required this.importAction,
       required this.responseSummary,
       this.conflicts});

@@ -8,6 +8,9 @@ class Geometry {
       {required this.type, required this.latitude, required this.longitude, required this.geometryData});
 
   factory Geometry.fromJson(Map<String, dynamic> jsonData) {
+
+    
+    
     return Geometry(
         latitude: jsonData["coordinates"]?.length > 1
             ? jsonData["coordinates"][1]
